@@ -3,14 +3,35 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Input from '../components/Input';
 
-const Login = () => {
+const Login = ({ onLogin }) => {
   const navigation = useNavigation();
-  const [mobile, setMobile] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginInfo, setLoginInfo] = useState({ mobile: '', password: '' });
+  const [errors, setErrors] = useState({ mobile: '', password: '' });
 
   const handleLogin = () => {
-    console.log('Mobile:', mobile);
-    console.log('Password:', password);
+    const { mobile, password } = loginInfo;
+    let newErrors = { mobile: '', password: '' };
+    let hasError = false;
+
+    if (!mobile) {
+      newErrors.mobile = 'Enter the phone number';
+      hasError = true;
+    }
+    if (!password) {
+      newErrors.password = 'Enter the password';
+      hasError = true;
+    }
+
+    setErrors(newErrors);
+
+    if (hasError) return;
+
+    // ✅ Here we simulate login success
+    console.log('Logging in with:', loginInfo);
+    setLoginInfo({ mobile: '', password: '' });
+
+    // call parent App's login
+    onLogin();
   };
 
   return (
@@ -22,17 +43,19 @@ const Login = () => {
         <Input
           label="Mobile Number"
           placeholder="Enter your mobile number"
-          value={mobile}
-          onChangeText={setMobile}
+          value={loginInfo.mobile}
+          onChangeText={mobile => setLoginInfo({ ...loginInfo, mobile })}
           keyboardType="phone-pad"
+          error={errors.mobile}
         />
 
         <Input
           label="Password"
           placeholder="Enter your password"
-          value={password}
-          onChangeText={setPassword}
-          
+          value={loginInfo.password}
+          onChangeText={password => setLoginInfo({ ...loginInfo, password })}
+          secureTextEntry
+          error={errors.password}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleLogin}>
@@ -54,6 +77,8 @@ const Login = () => {
 };
 
 export default Login;
+
+// ...styles (same as your code)
 
 const styles = StyleSheet.create({
   container: {

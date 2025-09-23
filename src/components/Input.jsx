@@ -1,16 +1,12 @@
 import React from 'react';
-import {
-  TextInput,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { TextInput, StyleSheet, Text, View } from 'react-native';
 
 const Input = ({
   label,
   placeholder,
   value,
   onChangeText,
+  error,
   secureTextEntry = false,
   keyboardType = 'default',
 }) => {
@@ -20,12 +16,17 @@ const Input = ({
       <TextInput
         style={styles.input}
         placeholder={placeholder}
-        value={value}
+        value={
+          secureTextEntry
+            ? '*'.repeat(value.length) // 👈 mask with asterisks
+            : value
+        }
         onChangeText={onChangeText}
-        secureTextEntry={secureTextEntry}
+        secureTextEntry={false} // 👈 disable default dots
         keyboardType={keyboardType}
         autoCapitalize="none"
       />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
   );
 };
@@ -48,5 +49,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingHorizontal: 10,
     backgroundColor: '#fff',
+  },
+  error: {
+    color: 'red',
+    marginTop: 3,
+    fontSize: 12,
   },
 });

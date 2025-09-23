@@ -3,19 +3,48 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Input from '../components/Input';
 
 const Register = ({ navigation }) => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  // const [user, setuser] = useState({ name: '', email: '', password: '' });
+  const [user, setUser] = useState({ name: '', email: '', password: '' });
+  const [errors, setErrors] = useState({ name: '', email: '', password: '' });
+
+  const validateEmail = email => {
+    const re = /\S+@\S+\.\S+/;
+    return re.test(email);
+  };
 
   const handleRegister = () => {
-    if (!name || !email || !password) {
-      alert('Please fill all fields');
-      return;
+    let newErrors = { name: '', email: '', password: '' };
+    let valid = true;
+
+    if (!user.name) {
+      newErrors.name = 'Name is required';
+      valid = false;
     }
-    console.log('Name:', name);
-    console.log('Email:', email);
-    console.log('Password:', password);
+
+    if (!user.email) {
+      newErrors.email = 'Email is required';
+      valid = false;
+    } else if (!validateEmail(user.email)) {
+      newErrors.email = 'Enter a valid email address';
+      valid = false;
+    }
+
+    if (!user.password) {
+      newErrors.password = 'Password is required';
+      valid = false;
+    } else if (user.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+      valid = false;
+    }
+
+    setErrors(newErrors);
+
+    if (!valid) return;
+
+    // ✅ If all fields are valid
+    console.log('User Registered:', user);
+    setUser({ name: '', email: '', password: '' });
+    setErrors({ name: '', email: '', password: '' });
+    alert('Registration successful!');
   };
 
   return (
@@ -26,23 +55,27 @@ const Register = ({ navigation }) => {
         <Input
           label="Name"
           placeholder="Enter your full name"
-          value={name}
-          onChangeText={setName}
+          value={user.name}
+          onChangeText={text => setUser({ ...user, name: text })}
+          error={errors.name}
         />
 
         <Input
           label="Email"
           placeholder="Enter your email address"
-          value={email}
-          onChangeText={setEmail}
+          value={user.email}
+          onChangeText={text => setUser({ ...user, email: text })}
           keyboardType="email-address"
+          error={errors.email}
         />
 
         <Input
           label="Password"
           placeholder="Create a strong password"
-          value={password}
-          onChangeText={setPassword}
+          value={user.password}
+          onChangeText={text => setUser({ ...user, password: text })}
+          secureTextEntry
+          error={errors.password}
         />
 
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
