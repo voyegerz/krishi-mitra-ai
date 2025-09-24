@@ -21,6 +21,7 @@ const QuickActionsCard = ({ actions }) => {
       </View>
 
       {/* Actions */}
+
       <View style={styles.row}>
         {actions &&
           actions.map((action, index) => (
@@ -40,12 +41,12 @@ export default QuickActionsCard;
 
 const styles = StyleSheet.create({
   card: {
-    height: 200,
     backgroundColor: '#fff',
     borderRadius: 5,
     padding: 15,
     marginBottom: 25,
-    elevation: 2,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   header: {
     flexDirection: 'row',
@@ -58,13 +59,16 @@ const styles = StyleSheet.create({
     marginLeft: 6,
   },
   row: {
+    // backgroundColor: 'pink',
+    flexWrap: 'wrap',
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    gap: 20,
+    padding: 5,
   },
   action: {
     alignItems: 'center',
     padding: 10,
-    width: '40%',
+    width: '45%',
     borderWidth: 1,
     borderColor: '#e0e0e0',
     borderRadius: 5,

@@ -29,6 +29,7 @@ const Home = () => {
       label: 'Disease Scan',
       onPress: () => console.log('Scan'),
     },
+   
   ];
 
   return (

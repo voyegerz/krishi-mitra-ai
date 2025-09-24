@@ -5,11 +5,11 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Register from './pages/Register';
 import Login from './pages/Login';
 import AppTab from './components/AppTab.jsx'; // 👈 Tab Navigation
-
+import AiChatBot from './components/AiChatBot.jsx'
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(true);
 
   return (
     <NavigationContainer>
@@ -19,6 +19,7 @@ export default function App() {
           <Stack.Screen name="AppTab">
             {props => (
               <AppTab {...props} onLogout={() => setIsLoggedIn(false)} />
+          
             )}
           </Stack.Screen>
         ) : (

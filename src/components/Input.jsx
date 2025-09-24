@@ -1,5 +1,6 @@
-import React from 'react';
-import { TextInput, StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
 const Input = ({
   label,
@@ -10,21 +11,28 @@ const Input = ({
   secureTextEntry = false,
   keyboardType = 'default',
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>{label}</Text>
       <TextInput
-        style={styles.input}
-        placeholder={placeholder}
-        value={
-          secureTextEntry
-            ? '*'.repeat(value.length) // 👈 mask with asterisks
-            : value
-        }
+        label={label}
+        value={value}
+        mode="outlined"
         onChangeText={onChangeText}
-        secureTextEntry={false} // 👈 disable default dots
+        outlineColor="#ddd"
+        activeOutlineColor="#4CAF50"
+        secureTextEntry={!showPassword}
         keyboardType={keyboardType}
         autoCapitalize="none"
+        right={
+          secureTextEntry ? (
+            <TextInput.Icon
+              icon={showPassword ? 'eye-off' : 'eye'}
+              onPress={() => setShowPassword(!showPassword)}
+              color="#4CAF50" // 👈 green icon
+            />
+          ) : null
+        }
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
     </View>
@@ -42,14 +50,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     fontWeight: '600',
   },
-  input: {
-    height: 45,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    backgroundColor: '#fff',
-  },
+
   error: {
     color: 'red',
     marginTop: 3,

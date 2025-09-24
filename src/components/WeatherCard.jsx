@@ -4,7 +4,6 @@ import { Icon } from 'react-native-paper';
 import ForecastItem from './ForecastItem.jsx';
 const WeatherCard = () => {
   return (
-    
     <View style={styles.card}>
       {/* Header */}
       <View style={styles.headerRow}>
@@ -52,7 +51,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 15,
     marginBottom: 15,
-    elevation: 2,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   headerRow: {
     flexDirection: 'row',
