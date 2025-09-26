@@ -3,13 +3,14 @@ import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
 export default function CartItem({ item, onIncrease, onDecrease }) {
+  const cartItemPrice = item.price * item.quantity;
   return (
     <View style={styles.container}>
       <Image source={{ uri: item.image }} style={styles.image} />
 
       <View style={styles.details}>
         <Text style={styles.title}>{item.name}</Text>
-        <Text style={styles.price}>₹ {item.price}</Text>
+        <Text style={styles.price}>₹ {cartItemPrice}</Text>
       </View>
 
       <View style={styles.quantityContainer}>

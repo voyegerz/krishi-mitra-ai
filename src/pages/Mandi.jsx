@@ -68,6 +68,7 @@ const ShopScreen = () => {
       <View style={styles.topBar}>
         <TextInput
           placeholder="Search products..."
+          placeholderTextColor="#999"
           value={text}
           onChangeText={setText}
           style={[styles.searchBar, isFocused && styles.focused]}
@@ -79,12 +80,11 @@ const ShopScreen = () => {
             style={styles.searchIcon}
             onPress={() => navigation.navigate('Cart')}
           >
-            <Icon name="cart" size={25} color="#4CAF50" />
+            <Icon name="cart" size={25} color="#4CAF50" style={styles.icon} />
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{totalItems}</Text>
+            </View>
           </TouchableOpacity>
-
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>{totalItems}</Text>
-          </View>
         </View>
       </View>
       {/* Category Tabs */}
@@ -132,6 +132,7 @@ const styles = StyleSheet.create({
   topBar: {
     flexDirection: 'row',
     gap: 10,
+    marginHorizontal: 5,
     alignItems: 'center',
   },
   searchBar: {
@@ -140,12 +141,16 @@ const styles = StyleSheet.create({
     margin: 10,
     borderWidth: 1,
     borderColor: '#ccc',
+    color: '#444',
     borderRadius: 8,
     paddingHorizontal: 12,
     // backgroundColor: '#fff',
   },
   searchIcon: {
-    marginRight: 10,
+    // marginRight: 10,
+  },
+  icon: {
+    padding: 5,
   },
   badge: {
     position: 'absolute',
@@ -171,7 +176,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 10,
     marginBottom: 0,
-    
+    marginHorizontal: 5,
   },
   tab: {
     height: 30,

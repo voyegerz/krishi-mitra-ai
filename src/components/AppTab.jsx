@@ -1,5 +1,5 @@
 // AppTabs.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Home from '../pages/Home.jsx';
@@ -9,6 +9,7 @@ import Scan from '../pages/Scan.jsx';
 import Cart from '../pages/Cart.jsx';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { View } from 'react-native';
+import changeNavigationBarColor from 'react-native-navigation-bar-color';
 import AiChatBot from './AiChatBot.jsx';
 const Tab = createBottomTabNavigator();
 
@@ -16,14 +17,25 @@ export function MandiStack() {
   const Stack = createStackNavigator();
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Mandi" component={Mandi} />
+      <Stack.Screen name="MandiStack" component={Mandi} />
       <Stack.Screen name="Cart" component={Cart} />
     </Stack.Navigator>
   );
 }
 export default function AppTabs() {
+  useEffect(() => {
+    async function setNavColor() {
+      try {
+        await changeNavigationBarColor('white', false);
+        // false = dark icons, true = light icons
+      } catch (e) {
+        console.warn('NavigationBarColor error:', e);
+      }
+    }
+    setNavColor();
+  }, []);
   return (
-    <View style={{ flex: 1 }}>
+    <>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
@@ -46,10 +58,10 @@ export default function AppTabs() {
           tabBarActiveTintColor: '#4CAF50',
           tabBarInactiveTintColor: 'gray',
           tabBarStyle: {
-            borderTopLeftRadius: 15,
-            borderTopRightRadius: 15,
-            height: 60,
-            paddingBottom: 5,
+            backgroundColor: '#fff', // or '#000' for Instagram dark
+            borderTopWidth: 0,
+            elevation: 0,
+            height: 50,
           },
           tabBarLabelStyle: { fontSize: 12, fontWeight: '600' },
         })}
@@ -60,6 +72,6 @@ export default function AppTabs() {
         <Tab.Screen name="Mandi" component={MandiStack} />
       </Tab.Navigator>
       <AiChatBot onPress={() => console.log('Chatbot open')} />
-    </View>
+    </>
   );
 }
