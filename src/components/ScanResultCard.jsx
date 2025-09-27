@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 
-const ScanResultCard = () => {
+const ScanResultCard = ({ scanImg }) => {
   return (
     <View style={styles.card}>
       {/* Title */}
@@ -10,7 +10,9 @@ const ScanResultCard = () => {
       {/* Image */}
       <Image
         source={{
-          uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8BOv9J1OArPGRsxwu8XG0u1QDfecHc3Xxog&s', // dummy image
+          uri:
+            scanImg ||
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS8BOv9J1OArPGRsxwu8XG0u1QDfecHc3Xxog&s', // dummy image
         }}
         style={styles.image}
         resizeMode="cover"
