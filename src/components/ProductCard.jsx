@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { addToCart } from '../redux/cartSlice.js';
 import { useDispatch, useSelector } from 'react-redux';
 
-const ProductCard = ({ name, price, image }) => {
+const ProductCard = ({ name, price, image, market }) => {
   const dispatch = useDispatch();
   return (
     <View style={styles.card}>
@@ -12,6 +12,7 @@ const ProductCard = ({ name, price, image }) => {
         {name}
       </Text>
       <Text style={styles.price}>₹ {price}</Text>
+      <Text style={styles.price}>{market}</Text>
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => {
@@ -29,7 +30,8 @@ export default ProductCard;
 
 const styles = StyleSheet.create({
   card: {
-    flex: 1,
+    flex:1,
+    alignSelf: 'flex-start',
     backgroundColor: '#e6efe2ff',
     borderRadius: 5,
     padding: 10,

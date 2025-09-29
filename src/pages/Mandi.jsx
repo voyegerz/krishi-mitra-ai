@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   StyleSheet,
@@ -6,62 +6,64 @@ import {
   Text,
   ScrollView,
   TextInput,
+  ActivityIndicator,
 } from 'react-native';
 import ProductGrid from '../components/ProductGrid';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
-const ShopScreen = () => {
-  const [selectedCategory, setSelectedCategory] = useState('All Products');
-  const categories = ['All Products', 'Seeds', 'Fertilizers', 'Farm Tools'];
-  const [text, setText] = useState('');
+
+const Mandi = () => {
+  
   const navigation = useNavigation();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState('All Products');
+  const [text, setText] = useState('');
   const [isFocused, setIsFocused] = useState(false);
-  const products = [
-    {
-      id: '1',
-      name: 'High-Yield Wheat Seeds (5kg)',
-      price: 450,
-      image:
-        'https://m.media-amazon.com/images/I/51eTdHJIrZL._UF1000,1000_QL80_.jpg',
-    },
-    {
-      id: '2',
-      name: 'Organic Fertiliser (25kg)',
-      price: 800,
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaIrKCmE1c5uoGOJ8A19NVoJH7-qgZRSzoJg&s',
-    },
-    {
-      id: '3',
-      name: 'Pesticide Spray Pump (Manual)',
-      price: 1200,
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDud3PjYHTtTy3G-mGBNlDmu7tA4IYGPdUCQ&s',
-    },
-    {
-      id: '4',
-      name: 'Drip Irrigation Kit (Small Farm)',
-      price: 2500,
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSPer-qGK_NjNnq4EQHkP0GVZkbrfpkirG3Q&s',
-    },
-    {
-      id: '5',
-      name: 'Hybrid Tomato Saplings (Pack of 10)',
-      price: 150,
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTUk1Qt_qtQR9I4xEpUcanfk5IS5gD8NgZHpw&s',
-    },
-    {
-      id: '6',
-      name: 'Garden Hand Tools Set',
-      price: 600,
-      image:
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREDQtgyEO0TVK9IILD6GED81RMBOxZAFlrog&s',
-    },
-  ];
   const totalItems = useSelector(state => state.cart.cart.length);
+
+  // Fetch products directly from API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(
+          'https://api.data.gov.in/resource/9ef84268-d588-465a-a308-a864a43d0070?api-key=579b464db66ec23bdd0000019e5e4d3b205b4f635d68cb6c8c5f84c2&format=json&limit=20',
+        );
+        const data = await response.json();
+        const transformed = data.records.map((item, index) => ({
+          id: index.toString(),
+          name: item.commodity || 'Unknown',
+          price: item.modal_price || item.Min_Price || '0',
+          category: item.commodity || 'All Products',
+          market: item.market,
+          image: 'https://via.placeholder.com/150',
+        }));
+        setProducts(transformed);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Categories dynamically
+  const categories = [
+    'All Products',
+    ...new Set(products.map(p => p.category)),
+  ];
+
+  // Filter products
+  const filteredProducts = products.filter(item => {
+    const matchesCategory =
+      selectedCategory === 'All Products' || item.category === selectedCategory;
+    const matchesSearch = item.name.toLowerCase().includes(text.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
+
   return (
     <View style={styles.container}>
       {/* Search Bar */}
@@ -75,31 +77,26 @@ const ShopScreen = () => {
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
         />
-        <View style={{ position: 'relative' }}>
-          <TouchableOpacity
-            style={styles.searchIcon}
-            onPress={() => navigation.navigate('Cart')}
-          >
-            <Icon name="cart" size={25} color="#4CAF50" style={styles.icon} />
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{totalItems}</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity
+          style={styles.searchIcon}
+          onPress={() => navigation.navigate('Cart')}
+        >
+          <Icon name="cart" size={25} color="#4CAF50" />
+          <View style={styles.badge}>
+            <Text style={styles.badgeText}>{totalItems}</Text>
+          </View>
+        </TouchableOpacity>
       </View>
+
       {/* Category Tabs */}
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.tabs}
-        contentContainerStyle={{
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
       >
-        {categories.map(cat => (
+        {categories.map((cat, idx) => (
           <TouchableOpacity
-            key={cat}
+            key={cat + idx}
             style={[styles.tab, selectedCategory === cat && styles.activeTab]}
             onPress={() => setSelectedCategory(cat)}
           >
@@ -116,68 +113,31 @@ const ShopScreen = () => {
       </ScrollView>
 
       {/* Product Grid */}
-      <ProductGrid products={products} />
+      {loading ? (
+        <ActivityIndicator size="large" style={{ flex: 1 }} />
+      ) : (
+        <ProductGrid products={filteredProducts} />
+      )}
     </View>
   );
 };
 
-export default ShopScreen;
+export default Mandi;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // backgroundColor: '#F9FAFB',
-  },
-
-  topBar: {
-    flexDirection: 'row',
-    gap: 10,
-    marginHorizontal: 5,
-    alignItems: 'center',
-  },
+  container: { flex: 1 },
+  topBar: { flexDirection: 'row', alignItems: 'center', margin: 10, gap: 10 },
   searchBar: {
-    width: '80%',
+    flex: 1,
     height: 45,
-    margin: 10,
     borderWidth: 1,
     borderColor: '#ccc',
-    color: '#444',
     borderRadius: 8,
     paddingHorizontal: 12,
-    // backgroundColor: '#fff',
   },
-  searchIcon: {
-    // marginRight: 10,
-  },
-  icon: {
-    padding: 5,
-  },
-  badge: {
-    position: 'absolute',
-    right: -5,
-    top: -5,
-    backgroundColor: '#4CAF50', // golden brown like your tabs
-    borderRadius: 30,
-    width: 18,
-    height: 18,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  badgeText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold',
-  },
-  focused: {
-    borderColor: '#4CAF50', // green when focused
-  },
-  tabs: {
-    height: 50,
-    flexDirection: 'row',
-    paddingHorizontal: 10,
-    marginBottom: 0,
-    marginHorizontal: 5,
-  },
+  focused: { borderColor: '#4CAF50' },
+  searchIcon: { position: 'relative' },
+  tabs: { flexDirection: 'row', height:40,paddingHorizontal: 10, marginBottom: 5 },
   tab: {
     height: 30,
     alignItems: 'center',
@@ -186,16 +146,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: '#eee',
     marginRight: 10,
+    
   },
-  activeTab: {
-    backgroundColor: '#4CAF50', // golden brown
+  badge: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    backgroundColor: '#4CAF50',
+    borderRadius: 30,
+    width: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  tabText: {
-    // backgroundColor:"blue",
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  activeTabText: {
-    color: '#fff',
-  },
+  badgeText: { color: '#fff', fontSize: 10, fontWeight: 'bold' },
+  activeTab: { backgroundColor: '#4CAF50' },
+  tabText: { fontSize: 14, fontWeight: '500' },
+  activeTabText: { color: '#fff' },
 });
